@@ -14,14 +14,17 @@ composition. It ships no executable code and needs no build step.
 
 1. Get a token: sign in at
    [greatarrow.ai/install/deepseek-harness](https://www.greatarrow.ai/install/deepseek-harness).
-2. Put it in `~/.dsh/.env` (or `$DSH_HOME/.env`), which dsh loads at launch:
+2. Save it as the only content of `~/.dsh/great-arrow.token` (or
+   `$DSH_HOME/great-arrow.token`). Use an editor rather than a shell command,
+   so the token stays out of your shell history. Then keep the file private:
 
    ```sh
-   GREAT_ARROW_TOKEN=gad_your_token
+   chmod 600 ~/.dsh/great-arrow.token
    ```
 
-   Keep that file private (`chmod 600 ~/.dsh/.env`). The token is never
-   written into the YAML.
+   The token is never written into the YAML. It is never read from an
+   environment variable either: dsh also loads a `.env` from whatever folder
+   you launch it in, which arrives with any cloned repository.
 
 3. Install the plugin into the profile you run (`dsh web` boots `web`):
 
@@ -49,17 +52,23 @@ agent should call `mcp__great-arrow__memory_search`.
 
 ## Already ran the GreatArrow.ai installer?
 
-The installer (Arrow Setup) writes the same row into `~/.dsh/cordis.patch.yml`,
+The installer (Arrow Setup) writes the same token file and the same row into
+`~/.dsh/cordis.patch.yml`,
 which covers every profile. Use the installer **or** this plugin, not both. Two
 rows with the same server name make the second one fail to load. When the
 installer sees this plugin in a profile, it writes only the token.
 
-## Options
+## Security
 
-| Environment variable | Default                     | Purpose                                      |
-| -------------------- | --------------------------- | -------------------------------------------- |
-| `GREAT_ARROW_TOKEN`  | — (required)                | Your `gad_` token                            |
-| `GREAT_ARROW_URL`    | `https://www.greatarrow.ai` | Point at a non-production GreatArrow.ai host |
+- The URL is fixed to `https://www.greatarrow.ai/api/mcp`, and the token is read
+  only from `great-arrow.token` in the dsh home. dsh lets only your launching
+  environment set `DSH_HOME`, so a project `.env` cannot move the file or swap
+  in another account.
+- Versions before 2026-10-02 read `GREAT_ARROW_TOKEN` and `GREAT_ARROW_URL`
+  from the environment. If you installed one and ever launched dsh inside an
+  untrusted repository, revoke the token at
+  [greatarrow.ai/account/connections](https://www.greatarrow.ai/account/connections)
+  and create a new one.
 
 ## Uninstall
 
@@ -67,7 +76,7 @@ installer sees this plugin in a profile, it writes only the token.
 dsh plugin --profile web remove dsh-greatarrow
 ```
 
-Then delete the `GREAT_ARROW_TOKEN` line from `~/.dsh/.env`, and revoke the
+Then delete `~/.dsh/great-arrow.token`, and revoke the
 token at [greatarrow.ai/account/connections](https://www.greatarrow.ai/account/connections).
 
 ## Privacy and support
