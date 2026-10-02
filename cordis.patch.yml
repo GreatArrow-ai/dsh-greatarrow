@@ -1,0 +1,13 @@
+# GreatArrow.ai memory for DeepSeek Harness.
+# Reads your token from GREAT_ARROW_TOKEN (put it in $DSH_HOME/.env, default ~/.dsh/.env).
+# Set GREAT_ARROW_URL only to point at a non-production GreatArrow.ai host.
+- insert:
+    - id: great-arrow-memory
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: great-arrow
+        transport: streamable-http
+        url: !!js '`${process.env.GREAT_ARROW_URL || "https://www.greatarrow.ai"}/api/mcp`'
+        headers:
+          Authorization: !!js '`Bearer ${process.env.GREAT_ARROW_TOKEN ?? ""}`'
+          X-MCP-Client: 'deepseek-harness'
